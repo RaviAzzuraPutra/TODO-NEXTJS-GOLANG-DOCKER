@@ -1,0 +1,58 @@
+############################
+# Root & Environment
+############################
+.env
+.env.*        # misal .env.local, .env.development
+!.env.example
+
+############################
+# Backend (Go)
+############################
+/backend/.env
+/backend/coverage
+/backend/bin/
+/backend/tmp/
+/backend/*.exe
+/backend/*.exe~
+/backend/*.out
+/backend/*.test
+/backend/*.dll
+/backend/*.so
+/backend/*.dylib
+# Jika nanti pakai go.work (multi-module)
+go.work
+go.work.sum
+
+############################
+# Frontend (Next.js / Node)
+############################
+/frontend/.env
+/frontend/node_modules
+/frontend/.next
+/frontend/out
+/frontend/build
+/frontend/.vercel
+/frontend/coverage
+/frontend/*.tsbuildinfo
+
+# Yarn / PnP
+/frontend/.pnp
+/frontend/.pnp.*
+/frontend/.yarn/*
+!/frontend/.yarn/patches
+!/frontend/.yarn/plugins
+!/frontend/.yarn/releases
+!/frontend/.yarn/versions
+
+# Logs & debug
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+/frontend/.pnpm-debug.log*
+
+############################
+# OS / Misc
+############################
+.DS_Store
+*.log
+*.pem
