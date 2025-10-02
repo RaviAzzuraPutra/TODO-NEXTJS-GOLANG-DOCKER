@@ -1,10 +1,10 @@
-package conifg
+package config
 
 import (
-	"backend/conifg/app_config"
-	"backend/conifg/db_config"
-	"backend/conifg/gemini_config"
-	"backend/conifg/google_config"
+	"backend/config/app_config"
+	"backend/config/db_config"
+	"backend/config/gemini_config"
+	"backend/config/google_config"
 )
 
 func IndexConfig() {

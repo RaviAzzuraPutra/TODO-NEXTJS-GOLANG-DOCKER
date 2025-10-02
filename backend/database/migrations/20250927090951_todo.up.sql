@@ -5,7 +5,7 @@ CREATE TABLE todo (
     description TEXT,
     category VARCHAR(100),
     priority VARCHAR(100),
-    duedate TIMESTAMP WITH TIME ZONE,
+    deadline TIMESTAMP WITH TIME ZONE,
     is_completed BOOLEAN DEFAULT FALSE,
     ai_insight TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
