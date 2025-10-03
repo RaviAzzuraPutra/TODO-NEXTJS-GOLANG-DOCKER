@@ -1,2 +1,18 @@
 @import "tailwindcss";
 
+/* Global full-height background to avoid white space when scrolling */
+html, body {
+	@apply min-h-screen w-full bg-gradient-to-br from-indigo-100 via-sky-100 to-purple-200 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900;
+}
+
+body {
+	/* Hapus overflow-hidden agar halaman bisa scroll secara vertical */
+	/* Batasi hanya horizontal yang disembunyikan untuk menghindari scrollbar tidak perlu */
+	@apply flex flex-col antialiased overflow-x-hidden;
+}
+
+/* Ensure Next.js root element stretches */
+#__next, body > div:first-child { /* fallback selector for older Next versions */
+	@apply flex-1 flex flex-col min-h-screen;
+}
+

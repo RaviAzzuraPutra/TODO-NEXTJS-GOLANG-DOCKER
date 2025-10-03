@@ -1,14 +1,10 @@
 export default function Login() {
     return (
-        <main className="min-h-[calc(100dvh-4rem)] w-full flex items-center justify-center px-4 py-10 bg-gradient-to-br from-indigo-50 via-sky-50 to-purple-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
-            {/* Outer container */}
+        <main className="min-h-[calc(100dvh-4rem)] w-full flex items-center justify-center px-4 py-10">
             <div className="relative w-full max-w-xl">
-                {/* Glow / decorative gradient ring */}
                 <div className="absolute -inset-0.5 bg-gradient-to-tr from-indigo-500 via-sky-400 to-purple-500 rounded-3xl blur opacity-30 animate-pulse [animation-duration:6s]" aria-hidden="true" />
 
-                {/* Card */}
                 <div className="relative overflow-hidden rounded-3xl border border-white/40 bg-white/70 dark:bg-white/10 backdrop-blur-xl px-8 sm:px-10 md:px-14 py-12 shadow-[0_8px_40px_-8px_rgba(0,0,0,0.25)] ring-1 ring-black/5">
-                    {/* Subtle background gradient overlay */}
                     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(99,102,241,0.18),transparent_55%),radial-gradient(circle_at_70%_80%,rgba(56,189,248,0.18),transparent_60%)]" aria-hidden="true" />
 
                     <header className="relative flex flex-col items-center text-center">
