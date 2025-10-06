@@ -5,6 +5,7 @@ import (
 	"backend/config/app_config"
 	"backend/database"
 	"backend/routes/auth_router"
+	"backend/routes/todo_router"
 	"log"
 	"os"
 
@@ -36,6 +37,7 @@ func InitialApp() {
 	}))
 
 	auth_router.AuthRouter(app)
+	todo_router.TodoRouter(app)
 
 	app.Run(app_config.PORT)
 }

@@ -8,7 +8,6 @@ import (
 
 type Todo struct {
 	Id           *string `json:"id" gorm:"column:id;primaryKey;type:uuid;default:gen_random_uuid()"`
-	User_id      *string `json:"user_id"`
 	Title        *string `json:"title"`
 	Description  *string `json:"description"`
 	Category     *string `json:"category"`

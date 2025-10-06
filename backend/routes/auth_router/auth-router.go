@@ -10,6 +10,7 @@ import (
 func AuthRouter(app *gin.Engine) {
 	route := app
 
-	route.POST("/login", auth_middleware.GuestMiddleware(), auth_controller.GoogleAuth)
-	route.POST("/logout", auth_controller.Logout)
+	auth := route.Group("/auth")
+	auth.POST("/login", auth_middleware.GuestMiddleware(), auth_controller.GoogleAuth)
+	auth.POST("/logout", auth_controller.Logout)
 }

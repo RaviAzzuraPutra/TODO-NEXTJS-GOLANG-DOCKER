@@ -12,13 +12,16 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() {
+
+	var errorConnect error
+
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
 		db_config.DBConfig().DB_HOST, db_config.DBConfig().DB_USER, db_config.DBConfig().DB_PASSWORD, db_config.DBConfig().DB_NAME, db_config.DBConfig().DB_PORT, db_config.DBConfig().DB_SSLMODE, db_config.DBConfig().DB_TIMEZONE)
 
-	DB, errDB := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	DB, errorConnect = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
-	if errDB != nil {
-		panic("GAGAL TERHUBUNG KE DATABASE" + errDB.Error())
+	if errorConnect != nil {
+		panic("GAGAL TERHUBUNG KE DATABASE" + errorConnect.Error())
 	}
 
 	if DB == nil {
