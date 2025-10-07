@@ -16,7 +16,6 @@ export default function Login() {
                         </p>
                     </header>
 
-                    {/* Divider */}
                     <div className="relative my-10 flex items-center">
                         <div className="h-px flex-1 bg-gradient-to-r from-transparent via-indigo-400/40 to-transparent" />
                         <span className="mx-4 text-[11px] tracking-wider uppercase font-semibold text-indigo-600/70 dark:text-indigo-300/80">
@@ -25,7 +24,6 @@ export default function Login() {
                         <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-400/40 to-transparent" />
                     </div>
 
-                    {/* Buttons */}
                     <div className="relative flex flex-col gap-5">
                         <button
                             type="button"
@@ -45,7 +43,6 @@ export default function Login() {
                         </button>
                     </div>
 
-                    {/* Decorative corner gradients */}
                     <div className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full bg-gradient-to-tr from-indigo-400/20 via-sky-300/10 to-purple-400/20 blur-2xl" aria-hidden="true" />
                     <div className="pointer-events-none absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-gradient-to-tr from-purple-400/20 via-sky-300/10 to-indigo-400/20 blur-2xl" aria-hidden="true" />
                 </div>

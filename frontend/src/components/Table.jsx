@@ -1,8 +1,11 @@
 "use client"
 import Link from "next/link"
 import Image from "next/image"
+import { useParams } from "next/navigation"
 
 export default function Table() {
+    const params = useParams()
+    const slug = params.slug
     return (
         <div className="w-full overflow-x-auto">
             <table className="min-w-full border-collapse rounded-lg overflow-hidden bg-white/5 backdrop-blur-sm shadow-2xl">
@@ -32,14 +35,14 @@ export default function Table() {
                                     <label htmlFor="todo-1" className="text-sm">Done</label>
                                 </div>
 
-                                <Link href={`/todo/detail`}>
+                                <Link href={`/todo/${slug}/detail`}>
                                     <button className="inline-flex items-center gap-2 rounded-md px-3 py-2 bg-gradient-to-tr from-indigo-500/10 via-sky-400/6 to-purple-500/10 hover:from-indigo-500/15 hover:to-purple-500/15 transition-shadow shadow-inner">
                                         <Image src="/assets/detail.png" alt="Detail" width={21} height={21} />
                                         <span className="text-sm">Detail</span>
                                     </button>
                                 </Link>
 
-                                <Link href={`/todo/update`}>
+                                <Link href={`/todo/${slug}/update`}>
                                     <button className="inline-flex items-center gap-2 rounded-md px-3 py-2 bg-gradient-to-tr from-indigo-500/10 via-sky-400/6 to-purple-500/10 hover:from-indigo-500/15 hover:to-purple-500/15 transition-shadow shadow-inner">
                                         <Image src="/assets/update.png" alt="Update" width={21} height={21} />
                                         <span className="text-sm">Update</span>

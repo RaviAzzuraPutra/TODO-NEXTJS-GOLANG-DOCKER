@@ -4,10 +4,14 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import Image from "next/image"
 import { useState, useRef, useEffect } from "react";
+import { useParams } from "next/navigation";
+
+const params = useParams()
+const slug = params.slug
 
 const navbarItems = [
-    { name: "Home", href: "/todo/home" },
-    { name: "About", href: "/todo/about" }
+    { name: "Home", href: `/todo/${slug}/home` },
+    { name: "About", href: `/todo/${slug}/about` }
 ]
 
 export default function Navbar() {
@@ -31,7 +35,6 @@ export default function Navbar() {
     }, [showDropdown]);
 
     function handleLogout() {
-        // TODO: Implement logout logic
         alert("Logout clicked");
     }
 

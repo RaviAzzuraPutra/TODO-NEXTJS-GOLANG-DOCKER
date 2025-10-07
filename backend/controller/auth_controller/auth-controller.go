@@ -64,31 +64,39 @@ func GoogleAuth(ctx *gin.Context) {
 		return fmt.Sprintf("%s-%d", slug, randomNumber)
 	}
 
-	userSlug := generateSlug(name)
-
 	user := new(model.User)
 
-	tx := database.DB.Where("google_id = ?", sub).First(&user)
+	tx := database.DB.Table("users").Where("google_id = ?", sub).First(&user)
 
 	if tx.RowsAffected == 0 {
+
+		userSlug := generateSlug(name)
+
 		user = &model.User{
 			Google_id:    &sub,
 			Email:        &email,
 			Display_name: &name,
 			Slug:         &userSlug,
 		}
-		if errDB := database.DB.Create(&user).Error; errDB != nil {
+		if errDB := database.DB.Table("users").Create(&user).Error; errDB != nil {
 			ctx.JSON(500, gin.H{
 				"Message": "Terjadi Kesalahan Saat Menyimpan Data User",
 				"Error":   errDB.Error(),
 			})
 			return
 		}
+	} else {
+		if user.Slug == nil {
+			userSlug := generateSlug(name)
+			database.DB.Table("users").Where("google_id = ?", sub).Update("slug", userSlug)
+			user.Slug = &userSlug
+		}
 	}
 
 	claims := jwt.MapClaims{
 		"user_id": sub,
 		"email":   email,
+		"slug":    *user.Slug,
 		"exp":     time.Now().Add(time.Hour * 24 * 7).Unix(), // expired 7 hari
 	}
 
@@ -109,7 +117,7 @@ func GoogleAuth(ctx *gin.Context) {
 		Session_token: &tokenString,
 	}
 
-	if errDBSession := database.DB.Create(&newSession).Error; errDBSession != nil {
+	if errDBSession := database.DB.Table("sessions").Create(&newSession).Error; errDBSession != nil {
 		ctx.JSON(500, gin.H{
 			"Message": "Terjadi kesalahan saat menyimpan session",
 			"Error":   errDBSession.Error(),
@@ -153,7 +161,7 @@ func Logout(ctx *gin.Context) {
 		return
 	}
 
-	errDB := database.DB.Unscoped().Where("session_token = ?", tokenString).Delete(&model.Session{}).Error
+	errDB := database.DB.Table("sessions").Unscoped().Where("session_token = ?", tokenString).Delete(&model.Session{}).Error
 
 	if errDB != nil {
 		ctx.JSON(500, gin.H{

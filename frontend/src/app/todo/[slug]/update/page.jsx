@@ -1,7 +1,10 @@
 "use client";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export default function UpdateTodoPage() {
+    const params = useParams()
+    const slug = params.slug
     return (
         <div className="w-full flex justify-center flex-col items-center">
             <div className="w-full flex items-center justify-center gap-3 mb-4">
@@ -48,7 +51,7 @@ export default function UpdateTodoPage() {
                             Add
                         </button>
 
-                        <Link href="/todo/home">
+                        <Link href={`/todo/${slug}/home`}>
                             <button className="inline-flex items-center gap-2 rounded-md px-4 py-2 border border-white/10 hover:bg-white/3 transition text-slate-200">Back</button>
                         </Link>
                     </div>

@@ -1,7 +1,10 @@
 "use client";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export default function TodoDetailPage() {
+    const params = useParams
+    const slug = params.slug
     return (
         <div className="w-full min-h-screen flex flex-col items-center justify-center py-10 px-2">
             <div className="w-full max-w-2xl flex items-center justify-center gap-3 mb-6">
@@ -40,7 +43,7 @@ export default function TodoDetailPage() {
                     <h4 className="text-md font-semibold text-slate-400">Created At: <span className="font-normal text-slate-300">2023-12-01</span></h4>
                 </div>
                 <div className="flex justify-end mt-7 gap-4">
-                    <Link href="/todo/home">
+                    <Link href={`/todo/${slug}/home`}>
                         <button className="inline-flex items-center gap-2 rounded-md px-4 py-2 border border-white/10 hover:bg-white/3 transition text-slate-200">Back</button>
                     </Link>
                 </div>
