@@ -1,4 +1,61 @@
+"use client"
+
+import { useEffect } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+
 export default function Login() {
+    const router = useRouter();
+
+    useEffect(() => {
+        const token = localStorage.getItem("access_token");
+        const slug = localStorage.getItem("slug");
+        if (token && slug) {
+            router.replace(`/todo/${slug}/home`)
+        }
+    }, [router])
+
+    const handleCallback = async (response) => {
+        try {
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, {
+                IdToken: response.credential,
+            })
+
+            const { token, slug } = res.data
+
+            localStorage.setItem("access_token", token);
+            localStorage.setItem("slug", slug);
+
+            router.replace(`/todo/${slug}/home`);
+
+        } catch (error) {
+            console.error("Terjadi Kesalahan Saat Login: ", error.response?.data || error.message)
+        }
+    }
+
+    useEffect(() => {
+        if (!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
+            console.error("Google Client ID is not defined. Please check your environment variables.");
+            return;
+        }
+
+        window.google.accounts.id.initialize({
+            client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+            callback: handleCallback,
+            use_fedcm_for_prompt: false
+        });
+
+        window.google.accounts.id.renderButton(
+            document.getElementById("googleBtn"),
+            { theme: "outline", size: "large", text: "signin_with", width: 250 }
+        );
+    }, []);
+
+    const handleGoogleLogin = () => {
+        window.google.accounts.id.prompt();
+    };
+
+
     return (
         <main className="min-h-[calc(100dvh-4rem)] w-full flex items-center justify-center px-4 py-10">
             <div className="relative w-full max-w-xl">
@@ -25,8 +82,13 @@ export default function Login() {
                     </div>
 
                     <div className="relative flex flex-col gap-5">
+                        {/* Tombol Google yang tersembunyi untuk functionality */}
+                        <div id="googleBtn" className="hidden" />
+
+                        {/* Custom button dengan styling yang sesuai tema */}
                         <button
                             type="button"
+                            onClick={handleGoogleLogin}
                             aria-label="Login dengan Google"
                             className="group relative flex items-center justify-center gap-3 rounded-2xl bg-white dark:bg-slate-800/80 px-6 py-4 text-sm font-medium text-slate-700 dark:text-slate-100 shadow-sm shadow-sky-900/5 ring-1 ring-slate-200/70 dark:ring-white/10 hover:ring-indigo-400/60 hover:shadow-[0_6px_22px_-4px_rgba(99,102,241,0.35)] transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-slate-100 dark:focus-visible:ring-offset-slate-900">
                             <span className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/0 via-sky-400/0 to-purple-500/0 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-500" />

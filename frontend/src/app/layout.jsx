@@ -17,6 +17,7 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         {children}
+        <script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
       </body>
     </html >
   )

@@ -125,12 +125,13 @@ func GoogleAuth(ctx *gin.Context) {
 		return
 	}
 
-	ctx.SetCookie("access_token", tokenString, 3600*24*7, "/", "localhost", false, true)
+	ctx.SetCookie("access_token", tokenString, 3600*24*7, "/", "", false, true)
 
 	ctx.JSON(200, gin.H{
 		"Message": "Berhasil Login",
 		"user":    user,
 		"token":   tokenString,
+		"slug":    *user.Slug,
 	})
 
 }
@@ -139,11 +140,24 @@ func Logout(ctx *gin.Context) {
 	tokenString, errToken := ctx.Cookie("access_token")
 
 	if errToken != nil {
-		ctx.JSON(400, gin.H{
-			"Message": "Bad Request",
-			"Error":   "Tidak ada token yang ditemukan",
-		})
-		return
+		authHeader := ctx.GetHeader("Authorization")
+		if authHeader == "" {
+			ctx.JSON(400, gin.H{
+				"Message": "Bad Request",
+				"Error":   "Tidak ada token yang ditemukan",
+			})
+			return
+		}
+		// Extract token from "Bearer <token>"
+		parts := strings.Split(authHeader, " ")
+		if len(parts) != 2 || parts[0] != "Bearer" {
+			ctx.JSON(400, gin.H{
+				"Message": "Bad Request",
+				"Error":   "Format Authorization header tidak valid",
+			})
+			return
+		}
+		tokenString = parts[1]
 	}
 
 	token, errParse := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {

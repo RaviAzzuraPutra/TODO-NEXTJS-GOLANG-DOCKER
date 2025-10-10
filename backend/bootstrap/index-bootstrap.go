@@ -21,6 +21,8 @@ func InitialApp() {
 		log.Println("Terjadi Kesalahan Saat Load .env")
 	}
 
+	FrontendURL := os.Getenv("FRONTEND_URL")
+
 	config.IndexConfig()
 
 	database.ConnectDB()
@@ -28,7 +30,7 @@ func InitialApp() {
 	app := gin.Default()
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{os.Getenv("FRONTEND_URL")},
+		AllowOrigins:     []string{FrontendURL},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"content-length"},

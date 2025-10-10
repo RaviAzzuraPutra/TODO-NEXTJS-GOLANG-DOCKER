@@ -5,21 +5,21 @@ import { usePathname } from "next/navigation"
 import Image from "next/image"
 import { useState, useRef, useEffect } from "react";
 import { useParams } from "next/navigation";
+import axios from "axios";
 
-const params = useParams()
-const slug = params.slug
-
-const navbarItems = [
-    { name: "Home", href: `/todo/${slug}/home` },
-    { name: "About", href: `/todo/${slug}/about` }
-]
 
 export default function Navbar() {
     const pathname = usePathname();
     const [showDropdown, setShowDropdown] = useState(false);
     const profileRef = useRef(null);
+    const params = useParams()
+    const slug = params.slug
 
-    // Close dropdown if click outside
+    const navbarItems = [
+        { name: "Home", href: `/todo/${slug}/home` },
+        { name: "About", href: `/todo/${slug}/about` }
+    ]
+
     useEffect(() => {
         function handleClickOutside(event) {
             if (profileRef.current && !profileRef.current.contains(event.target)) {
@@ -34,8 +34,29 @@ export default function Navbar() {
         };
     }, [showDropdown]);
 
-    function handleLogout() {
-        alert("Logout clicked");
+    async function handleLogout() {
+        try {
+            const token = localStorage.getItem("access_token");
+
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/logout`,
+                {},
+                {
+                    withCredentials: true,
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            console.log(response.data);
+
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("slug");
+            window.location.href = "/login";
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
     }
 
     return (
@@ -114,12 +135,15 @@ export default function Navbar() {
                             />
                         </button>
                         {showDropdown && (
-                            <div className="absolute right-7 top-16 z-50 min-w-[120px] bg-white/90 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg flex flex-col items-start animate-fade-in">
+                            <div className="absolute right-7 top-16 z-50 min-w-[140px] backdrop-blur-xl bg-slate-900/90 border border-white/20 rounded-2xl shadow-[0_8px_24px_-8px_rgba(0,0,0,0.4)] ring-1 ring-white/10 flex flex-col items-start animate-fade-in overflow-hidden">
                                 <button
-                                    className="flex items-center justify-center w-full rounded-lg transition-colors"
+                                    className="group relative flex items-center justify-center w-full px-3 py-2 transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500/20 hover:via-rose-500/15 hover:to-pink-500/20"
                                     onClick={handleLogout}
                                 >
-                                    <img src="/assets/logout.png" alt="logout" width={31} height={31} />
+                                    <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-red-500/5 via-rose-500/5 to-pink-500/5 blur-sm" />
+                                    <span className="relative text-sm font-medium tracking-wider bg-gradient-to-r from-slate-300 to-slate-400 group-hover:from-red-300 group-hover:via-rose-300 group-hover:to-pink-300 bg-clip-text text-transparent transition-all duration-300 drop-shadow-sm">
+                                        LOGOUT
+                                    </span>
                                 </button>
                             </div>
                         )}

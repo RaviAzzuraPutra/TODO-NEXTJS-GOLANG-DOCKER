@@ -76,7 +76,7 @@ func GetTodo(ctx *gin.Context) {
 
 	if todo == nil {
 		ctx.JSON(404, gin.H{
-			"Message": "Data Kosong",
+			"Message": "The Todo Is Empty!",
 		})
 		return
 	}
