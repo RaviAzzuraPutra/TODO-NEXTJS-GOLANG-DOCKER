@@ -3,13 +3,16 @@ import Table from "@/components/Table"
 import Link from "next/link"
 import Image from "next/image"
 import { useParams, useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import { Alert, Snackbar } from "@mui/material"
 
 export default function Home() {
     const params = useParams()
     const slug = params.slug
 
     const router = useRouter()
+    const [alertOpen, setAlertOpen] = useState(false)
+    const [alertPayload, setAlertPayload] = useState({ severity: "info", message: "" })
 
     useEffect(() => {
         const token = localStorage.getItem("access_token");
@@ -32,12 +35,25 @@ export default function Home() {
         }
     }, [router, slug])
 
+    useEffect(() => {
+        try {
+            const raw = localStorage.getItem("todo_alert")
+            if (raw) {
+                const parsed = JSON.parse(raw)
+                setAlertPayload({ severity: parsed.severity || "success", message: parsed.message || "" })
+                setAlertOpen(true)
+                localStorage.removeItem("todo_alert")
+            }
+        } catch (e) {
+            // ignore parsing error
+        }
+    }, [])
 
 
     return (
         <>
             <main className="px-8 py-10">
-                <h1 className="text-3xl font-semibold tracking-tight mt-8 mb-10 bg-gradient-to-r from-indigo-600 via-sky-600 to-purple-600 bg-clip-text text-transparent">ToDo List App With Artificial Intelligence</h1>
+                <h1 className="text-4xl font-semibold tracking-tight mb-10 pb-1 bg-gradient-to-r from-indigo-600 via-sky-600 to-purple-600 bg-clip-text text-transparent">ToDo List App With Artificial Intelligence</h1>
                 <div className="overflow-x-auto">
                     <div className="mb-7 w-full flex justify-start">
                         <Link href={`/todo/${slug}/add`}>
@@ -50,6 +66,16 @@ export default function Home() {
                 </div>
                 <Table />
             </main>
+            <Snackbar
+                open={alertOpen}
+                autoHideDuration={4000}
+                onClose={() => setAlertOpen(false)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+            >
+                <Alert severity={alertPayload.severity} onClose={() => setAlertOpen(false)} sx={{ width: "100%" }}>
+                    {alertPayload.message}
+                </Alert>
+            </Snackbar>
         </>
     )
 }

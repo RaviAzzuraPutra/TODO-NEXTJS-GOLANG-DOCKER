@@ -23,6 +23,7 @@ export default function TodoLayout({ children }) {
             <main className="flex-1 w-full flex flex-col items-center justify-start px-4 md:px-8 py-4">
                 <div className="w-full max-w-6xl mx-auto">
                     {children}
+                    <script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
                 </div>
             </main>
             <Footer />

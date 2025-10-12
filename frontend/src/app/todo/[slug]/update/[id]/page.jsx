@@ -1,10 +1,35 @@
 "use client";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect } from "react"
 
 export default function UpdateTodoPage() {
     const params = useParams()
     const slug = params.slug
+
+    const router = useRouter()
+
+    useEffect(() => {
+        const token = localStorage.getItem("access_token");
+        const savedSlug = localStorage.getItem("slug");
+
+        if (!token || slug !== savedSlug) {
+            router.replace("/login")
+            return
+        }
+
+        const handlePopState = () => {
+            router.replace(`/todo/${slug}/home`);
+        }
+
+        window.history.pushState(null, "", window.location.href);
+        window.addEventListener("popstate", handlePopState);
+
+        return () => {
+            window.removeEventListener("popstate", handlePopState);
+        }
+    }, [router, slug])
+
     return (
         <div className="w-full flex justify-center flex-col items-center">
             <div className="w-full flex items-center justify-center gap-3 mb-4">

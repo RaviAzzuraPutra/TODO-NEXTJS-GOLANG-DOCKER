@@ -94,10 +94,9 @@ func GoogleAuth(ctx *gin.Context) {
 	}
 
 	claims := jwt.MapClaims{
-		"user_id": sub,
-		"email":   email,
+		"user_id": user.Id,
 		"slug":    *user.Slug,
-		"exp":     time.Now().Add(time.Hour * 24 * 7).Unix(), // expired 7 hari
+		"exp":     time.Now().Add(time.Hour * 24 * 7).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -125,7 +124,7 @@ func GoogleAuth(ctx *gin.Context) {
 		return
 	}
 
-	ctx.SetCookie("access_token", tokenString, 3600*24*7, "/", "", false, true)
+	ctx.SetCookie("access_token", tokenString, 3600, "/", "localhost", false, true)
 
 	ctx.JSON(200, gin.H{
 		"Message": "Berhasil Login",

@@ -5,9 +5,12 @@ import (
 	"backend/model"
 	"backend/request/todo_request"
 	"backend/utils"
+	"errors"
+	"fmt"
 
 	"github.com/abadojack/whatlanggo"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func CreateTodo(ctx *gin.Context) {
@@ -54,7 +57,7 @@ func CreateTodo(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, gin.H{
+	ctx.JSON(201, gin.H{
 		"Message": "Berhasil Membuat Todo",
 		"Data":    todo,
 	})
@@ -64,7 +67,7 @@ func GetTodo(ctx *gin.Context) {
 	todo := new([]model.Todo)
 	userSlug := ctx.GetString("slug")
 
-	errDb := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("users.slug = ? AND deleted_at IS NULL", userSlug).Order("deadline asc").Find(&todo).Error
+	errDb := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("users.slug = ?", userSlug).Order("deadline asc").Find(&todo).Error
 
 	if errDb != nil {
 		ctx.JSON(500, gin.H{
@@ -74,9 +77,10 @@ func GetTodo(ctx *gin.Context) {
 		return
 	}
 
-	if todo == nil {
+	if len(*todo) == 0 {
 		ctx.JSON(404, gin.H{
-			"Message": "The Todo Is Empty!",
+			"Message": "There is nothing to do at all!",
+			"Data":    []model.Todo{},
 		})
 		return
 	}
@@ -93,7 +97,7 @@ func GetTodoByID(ctx *gin.Context) {
 
 	todo := new(model.Todo)
 
-	errDb := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("id = ? AND users.slug = ? AND deleted_at IS NULL", ID, userSlug).First(&todo).Error
+	errDb := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("todo.id = ? AND users.slug = ?", ID, userSlug).First(&todo).Error
 
 	if errDb != nil {
 		if todo.Id == nil {
@@ -122,10 +126,12 @@ func DeleteTodoByID(ctx *gin.Context) {
 
 	todo := new(model.Todo)
 
-	errFind := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("id = ? AND users.slug = ? AND deleted_at IS NULL", id, slug).First(&todo).Error
+	errFind := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("todo.id = ? AND users.slug = ?", id, slug).First(&todo).Error
+
+	fmt.Println("ERR FIND:", errFind)
 
 	if errFind != nil {
-		if todo.Id == nil {
+		if errors.Is(errFind, gorm.ErrRecordNotFound) {
 			ctx.JSON(404, gin.H{
 				"Message": "Data Tidak Ditemukan",
 			})
@@ -133,13 +139,13 @@ func DeleteTodoByID(ctx *gin.Context) {
 		} else {
 			ctx.JSON(500, gin.H{
 				"Message": "Internal Server Error",
-				"Error":   "Terjadi Error pada Database" + errFind.Error(),
+				"Error":   "Terjadi Error pada Database: " + errFind.Error(),
 			})
 			return
 		}
 	}
 
-	errDb := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("id = ? AND users.slug = ?", id, slug).Delete(&todo).Error
+	errDb := database.DB.Table("todo").Delete(&todo).Error
 
 	if errDb != nil {
 		ctx.JSON(500, gin.H{
@@ -169,7 +175,7 @@ func UpdateTodo(ctx *gin.Context) {
 
 	todo := new(model.Todo)
 
-	errFind := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("id = ? AND users.slug = ? AND deleted_at IS NULL", id, userSlug).First(&todo).Error
+	errFind := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("todo.id = ? AND users.slug = ?", id, userSlug).First(&todo).Error
 
 	if errFind != nil {
 		if todo.Id == nil {
@@ -302,7 +308,7 @@ func UpdateIsCompleted(ctx *gin.Context) {
 
 	todo := new(model.Todo)
 
-	errFind := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("id = ? AND users.slug = ? AND deleted_at IS NULL", id, userSlug).First(&todo).Error
+	errFind := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("todo.id = ? AND users.slug = ?", id, userSlug).First(&todo).Error
 
 	if errFind != nil {
 		if todo.Id == nil {
@@ -321,7 +327,7 @@ func UpdateIsCompleted(ctx *gin.Context) {
 
 	todo.Is_Completed = *isCompletedRequest.Is_Completed
 
-	errDb := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("id = ? AND users.slug = ?", id, userSlug).Updates(&todo).Error
+	errDb := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("todo.id = ? AND users.slug = ?", id, userSlug).Updates(&todo).Error
 
 	if errDb != nil {
 		ctx.JSON(500, gin.H{

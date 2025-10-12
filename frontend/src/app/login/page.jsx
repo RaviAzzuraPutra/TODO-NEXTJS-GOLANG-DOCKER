@@ -69,14 +69,14 @@ export default function Login() {
                             Login & Register
                         </h1>
                         <p className="mt-4 max-w-md text-sm sm:text-base text-slate-600 dark:text-slate-300">
-                            Masuk dan daftar dengan akun Google Anda untuk mulai mengelola todo list secara mudah dan aman.
+                            Sign in and register with your Google account to start managing your to-do list easily and securely.
                         </p>
                     </header>
 
                     <div className="relative my-10 flex items-center">
                         <div className="h-px flex-1 bg-gradient-to-r from-transparent via-indigo-400/40 to-transparent" />
                         <span className="mx-4 text-[11px] tracking-wider uppercase font-semibold text-indigo-600/70 dark:text-indigo-300/80">
-                            Akses Cepat
+                            ꧁Quick Access꧂
                         </span>
                         <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-400/40 to-transparent" />
                     </div>

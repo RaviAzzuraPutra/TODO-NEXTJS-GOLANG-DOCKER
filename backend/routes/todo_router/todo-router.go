@@ -15,7 +15,7 @@ func TodoRouter(app *gin.Engine) {
 	todo.Use(todo_middleware.GetJWT())
 
 	todo.POST("/create-todo", todo_controller.CreateTodo)
-	todo.GET("/", todo_controller.GetTodo)
+	todo.GET("", todo_controller.GetTodo)
 	todo.GET("/:id", todo_controller.GetTodoByID)
 	todo.DELETE("/:id", todo_controller.DeleteTodoByID)
 	todo.PATCH("/update-todo/:id", todo_controller.UpdateTodo)
