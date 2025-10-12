@@ -96,6 +96,10 @@ export default function Table() {
         })
     }
 
+    const formatCompleted = (value) => {
+        return value === true || value === "true" ? "Yes" : "No";
+    };
+
     return (
         <div className="w-full overflow-x-auto">
             <table className="min-w-full border-collapse rounded-lg overflow-hidden bg-white/5 backdrop-blur-sm shadow-2xl">
@@ -119,17 +123,23 @@ export default function Table() {
                         </tr>
                     ) : todos.length > 0 ? (
                         todos.map((todo, index) => (
-                            <tr className="odd:bg-white/3 even:bg-transparent hover:bg-white/2" key={todo.id}>
+                            <tr
+                                className={`${todo.is_completed
+                                    ? "bg-gray-800/60 text-gray-500 hover:bg-gray-800/70"
+                                    : "odd:bg-white/3 even:bg-transparent hover:bg-white/2"
+                                    }`}
+                                key={todo.id}
+                            >
                                 <td className="py-3 px-4 text-center">{index + 1}</td>
                                 <td className="py-3 px-4 text-start">{todo.title}</td>
                                 <td className="py-3 px-4 text-center">{todo.category}</td>
                                 <td className="py-3 px-4 text-center">{todo.priority}</td>
                                 <td className="py-3 px-4 text-center">{formatDate(todo.deadline)}</td>
-                                <td className="py-3 px-4 text-center">{todo.isCompleted ? "Yes" : "No"}</td>
+                                <td className="py-3 px-4 text-center">{formatCompleted(todo.is_completed)}</td>
                                 <td className="py-2 px-4 text-center">
                                     <div className="flex items-center justify-center gap-3">
                                         <div className="flex items-center gap-2">
-                                            <input type="checkbox" name="todo" id={`todo-${todo.id}`} className="accent-sky-200" />
+                                            <input type="checkbox" name="todo" id={`todo-${todo.id}`} checked={todo.is_completed} className="accent-sky-200" />
                                             <label htmlFor={`todo-${todo.id}`} className="text-sm">Done</label>
                                         </div>
 
@@ -140,8 +150,14 @@ export default function Table() {
                                             </button>
                                         </Link>
 
-                                        <Link href={`/todo/${slug}/update/${todo.id}`}>
-                                            <button className="inline-flex items-center justify-center gap-1 rounded-md px-3 py-3 bg-gradient-to-tr from-indigo-500/10 via-sky-400/6 to-purple-500/10 hover:from-indigo-500/15 hover:to-purple-500/15 transition-shadow shadow-inner">
+                                        <Link href={todo.is_completed ? "#" : `/todo/${slug}/update/${todo.id}`}>
+                                            <button
+                                                disabled={todo.is_completed}
+                                                className={`inline-flex items-center justify-center gap-1 rounded-md px-3 py-3 transition-shadow shadow-inner ${todo.is_completed
+                                                    ? "bg-gray-700/30 cursor-not-allowed opacity-50"
+                                                    : "bg-gradient-to-tr from-indigo-500/10 via-sky-400/6 to-purple-500/10 hover:from-indigo-500/15 hover:to-purple-500/15"
+                                                    }`}
+                                            >
                                                 <Image src="/assets/update.png" alt="Update" width={21} height={21} />
                                                 <span className="text-sm text-slate-200">Update</span>
                                             </button>

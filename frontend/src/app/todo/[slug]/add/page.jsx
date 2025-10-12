@@ -84,8 +84,6 @@ export default function AddTodoPage() {
                 },
             })
 
-            console.log(create.data)
-
             setLoading(false)
             if (create.status === 201) {
                 localStorage.setItem("todo_alert", JSON.stringify({ severity: "success", message: "Todo created successfully!" }))

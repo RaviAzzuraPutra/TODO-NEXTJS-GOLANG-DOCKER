@@ -7,10 +7,9 @@ type TodoCreateRequest struct {
 }
 
 type TodoUpdateRequest struct {
-	Title        *string `form:"title"`
-	Description  *string `form:"description"`
-	Deadline     *string `form:"deadline"`
-	Is_Completed *bool   `form:"is_completed"`
+	Title       *string `form:"title"`
+	Description *string `form:"description"`
+	Deadline    *string `form:"deadline"`
 }
 
 type IsCompletedRequest struct {

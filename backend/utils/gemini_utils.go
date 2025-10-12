@@ -102,10 +102,9 @@ func Gemini_Utils(title, description, deadline, lang string) (string, string, st
 		4. Avoid generic suggestions; make it contextually relevant. 
 		5. Make it as good as possible.
 		6. Do not include any introduction, explanation, or commentary outside the JSON format.
-		7. Make a good and correct conclusion at the end of the advice written in a sophisticated and academically refined tone equivalent to a PhD professor.
-		8. Separate the opening paragraph, list of suggestions and conclusion.
-		9. Use \n for line breaks in the insight section.
-		10. Dont use * for bold text, dont use _ for italic text and dont use bullets for numbered lists.
+		7. Separate the opening paragraph, list of suggestions and conclusion.
+		8. Use \n for line breaks in the insight section and Make sure not to use asterisks (*) in lists, bullet points, or emphasis when generating insights.
+		9. Make a maximum of 500 words.
 
 		Additional Rules:
 		1. Lists should be numbered, with each item representing a single actionable idea.

@@ -67,7 +67,7 @@ func GetTodo(ctx *gin.Context) {
 	todo := new([]model.Todo)
 	userSlug := ctx.GetString("slug")
 
-	errDb := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("users.slug = ?", userSlug).Order("deadline asc").Find(&todo).Error
+	errDb := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("users.slug = ?", userSlug).Order("is_completed asc").Order("deadline asc").Find(&todo).Error
 
 	if errDb != nil {
 		ctx.JSON(500, gin.H{
@@ -178,10 +178,8 @@ func UpdateTodo(ctx *gin.Context) {
 	errFind := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("todo.id = ? AND users.slug = ?", id, userSlug).First(&todo).Error
 
 	if errFind != nil {
-		if todo.Id == nil {
-			ctx.JSON(404, gin.H{
-				"Message": "Data Tidak Ditemukan",
-			})
+		if errors.Is(errFind, gorm.ErrRecordNotFound) {
+			ctx.JSON(404, gin.H{"Message": "Data Tidak Ditemukan"})
 			return
 		} else {
 			ctx.JSON(500, gin.H{
@@ -192,26 +190,24 @@ func UpdateTodo(ctx *gin.Context) {
 		}
 	}
 
-	needAI := false
-	needPriorityOnly := false
 	updateData := map[string]interface{}{}
+
+	// Track what fields are being updated
+	titleChanged := false
+	descChanged := false
+	deadlineChanged := false
 
 	if todoRequest.Title != nil && *todoRequest.Title != *todo.Title {
 		updateData["title"] = todoRequest.Title
-		needAI = true
+		titleChanged = true
 	}
 	if todoRequest.Description != nil && *todoRequest.Description != *todo.Description {
 		updateData["description"] = todoRequest.Description
-		needAI = true
+		descChanged = true
 	}
 	if todoRequest.Deadline != nil && *todoRequest.Deadline != *todo.Deadline {
 		updateData["deadline"] = todoRequest.Deadline
-		if !needAI {
-			needPriorityOnly = true
-		}
-	}
-	if todoRequest.Is_Completed != nil && *todoRequest.Is_Completed != todo.Is_Completed {
-		updateData["is_completed"] = *todoRequest.Is_Completed
+		deadlineChanged = true
 	}
 
 	if len(updateData) == 0 {
@@ -222,10 +218,16 @@ func UpdateTodo(ctx *gin.Context) {
 		return
 	}
 
-	if needAI {
+	// Determine what AI processing is needed
+	needsFullAIUpdate := titleChanged || descChanged
+	needsPriorityUpdate := !needsFullAIUpdate && deadlineChanged
+
+	if needsFullAIUpdate {
+		// Title or Description changed - need full AI regeneration
 		title := *todo.Title
 		desc := *todo.Description
 		deadline := *todo.Deadline
+
 		if todoRequest.Title != nil {
 			title = *todoRequest.Title
 		}
@@ -236,11 +238,19 @@ func UpdateTodo(ctx *gin.Context) {
 			deadline = *todoRequest.Deadline
 		}
 
+		text := title + " " + desc
+		info := whatlanggo.Detect(text)
+		langCode := info.Lang.Iso6391()
+
+		if langCode == "" {
+			langCode = "id"
+		}
+
 		category, priority, insight, err := utils.Gemini_Utils(
 			title,
 			desc,
 			deadline,
-			"id",
+			langCode,
 		)
 		if err != nil {
 			ctx.JSON(500, gin.H{"error": "Gagal menghasilkan AI insight", "details": err.Error()})
@@ -249,23 +259,33 @@ func UpdateTodo(ctx *gin.Context) {
 
 		updateData["category"] = category
 		updateData["priority"] = priority
-		updateData["deadline"] = deadline
 		updateData["ai_insight"] = insight
-	} else if needPriorityOnly {
+	} else if needsPriorityUpdate {
+		// Only deadline changed - update priority only
 		deadline := *todo.Deadline
 		if todoRequest.Deadline != nil {
 			deadline = *todoRequest.Deadline
 		}
 
-		_, priority, _, err := utils.Gemini_Utils(*todo.Title, *todo.Description, deadline, "id")
+		text := *todo.Title + " " + *todo.Description
+		info := whatlanggo.Detect(text)
+		langCode := info.Lang.Iso6391()
+		if langCode == "" {
+			langCode = "id"
+		}
+
+		_, priority, _, err := utils.Gemini_Utils(*todo.Title, *todo.Description, deadline, langCode)
 		if err != nil {
 			ctx.JSON(500, gin.H{"error": "Gagal menghasilkan priority", "details": err.Error()})
 			return
 		}
 		updateData["priority"] = priority
 	}
+	// If only is_completed changed, skip all AI processing (no else block needed)
 
-	errDb := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("id = ? AND users.slug = ?", id, userSlug).Updates(updateData).Error
+	fmt.Println("Updating todo with data:", updateData)
+
+	errDb := database.DB.Table("todo").Where("id = ?", id).Updates(&updateData).Error
 
 	if errDb != nil {
 		ctx.JSON(500, gin.H{
@@ -285,7 +305,7 @@ func UpdateTodo(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, gin.H{
+	ctx.JSON(201, gin.H{
 		"Message": "Berhasil Merubah Data Todo",
 		"Data":    updatedTodo,
 	})

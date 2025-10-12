@@ -1,13 +1,27 @@
 "use client";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import { Alert, Snackbar } from "@mui/material";
+import Lottie from "lottie-react";
+import LoadingAnimations from "/public/assets/loading-animation.json"
+import axios from "axios";
+import { formatDate } from "../../../../../../utils/FormatDate";
+
 
 export default function UpdateTodoPage() {
     const params = useParams()
     const slug = params.slug
-
+    const ID = params.id
     const router = useRouter()
+    const [loading, setLoading] = useState(false)
+    const [snackbar, setSnackbar] = useState({ open: false, severity: "info", message: "" })
+    const [todoFields, setTodoFields] = useState({
+        title: "",
+        description: "",
+        deadline: "",
+    })
+    const [originalTitle, setOriginalTitle] = useState("")
 
     useEffect(() => {
         const token = localStorage.getItem("access_token");
@@ -30,11 +44,102 @@ export default function UpdateTodoPage() {
         }
     }, [router, slug])
 
+    useEffect(() => {
+        getData()
+    }, [ID])
+
+    const getData = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/todo/${ID}`, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+                },
+                validateStatus: (status) => status < 500,
+            })
+            setTodoFields(response.data.Data)
+            setOriginalTitle(response.data.Data.title)
+
+            let formattedDate = formatDate(response.data.Data.deadline)
+            if (response.data.Data.deadline) {
+                const date = new Date(response.data.Data.deadline);
+                formattedDate = date.toISOString().split("T")[0];
+            }
+            setTodoFields(prev => ({ ...prev, deadline: formattedDate }))
+
+
+        } catch (error) {
+            console.log("Error Fetching Detail Todo Data:", error)
+        }
+    }
+
+    const handleInputChange = (e) => {
+        const { name, type, value, checked } = e.target;
+
+        setTodoFields((prev) => ({
+            ...prev,
+            [name]: type === "checkbox" ? checked : value,
+        }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        const updateData = {
+            title: todoFields.title,
+            description: todoFields.description,
+            deadline: todoFields.deadline,
+        };
+
+        if (!todoFields.title) {
+            setSnackbar({ open: true, severity: "warning", message: "The title is an imperative data entity that requires valid filling in order to ensure the integrity of the form." })
+            return;
+        }
+
+        if (!todoFields.description) {
+            setSnackbar({ open: true, severity: "warning", message: "The description is an imperative data entity that requires valid filling in order to ensure the integrity of the form." })
+            return;
+        }
+
+        if (!todoFields.deadline) {
+            setSnackbar({ open: true, severity: "warning", message: "The deadline is an imperative data entity that requires valid filling in order to ensure the integrity of the form." })
+            return;
+        }
+
+
+        try {
+            setLoading(true)
+            const update = await axios.patch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/todo/update-todo/${ID}`, updateData, {
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+                },
+            })
+
+            setLoading(false)
+            if (update.status === 201) {
+                localStorage.setItem("todo_alert", JSON.stringify({ severity: "success", message: "Todo update successfully!" }))
+                router.replace(`/todo/${slug}/home`)
+                return;
+            }
+
+            setSnackbar({ open: true, severity: "error", message: "Unexpected response from server." })
+            return;
+
+        } catch (error) {
+            console.error("There was an error updating the todo:", error);
+            setLoading(false)
+            setSnackbar({ open: true, severity: "error", message: "There was an error update the todo. Please try again later." })
+            return;
+        }
+    }
+
     return (
         <div className="w-full flex justify-center flex-col items-center">
             <div className="w-full flex items-center justify-center gap-3 mb-4">
                 <h1 className="text-4xl font-semibold text-center m-5 bg-gradient-to-r from-indigo-600 via-sky-600 to-purple-600 bg-clip-text text-transparent">
-                    Update Todo
+                    Update Todo {originalTitle}
                 </h1>
             </div>
             <div className="w-full p-4 rounded-xl shadow-[0_8px_30px_-8px_rgba(2,6,23,0.6)] border border-white/10 bg-white/5 backdrop-blur-sm">
@@ -47,6 +152,8 @@ export default function UpdateTodoPage() {
                             name="title"
                             className="rounded-lg shadow-inner w-full px-5 py-2 border border-white/10 bg-transparent text-slate-200 placeholder:text-slate-400"
                             placeholder="Task title"
+                            value={todoFields.title}
+                            onChange={e => handleInputChange(e)}
                         />
                     </div>
 
@@ -58,6 +165,8 @@ export default function UpdateTodoPage() {
                             rows={8}
                             className="rounded-lg shadow-inner w-full px-5 py-3 border border-white/10 bg-transparent text-slate-200 placeholder:text-slate-400 resize-vertical"
                             placeholder="Write a complete description here... (explain what will be done, the purpose, context, etc.)"
+                            value={todoFields.description}
+                            onChange={e => handleInputChange(e)}
                         />
                     </div>
 
@@ -68,12 +177,14 @@ export default function UpdateTodoPage() {
                             id="deadline"
                             name="deadline"
                             className="rounded-lg shadow-inner w-full px-5 py-2 border border-white/10 bg-transparent text-slate-200"
+                            value={todoFields.deadline || ""}
+                            onChange={e => handleInputChange(e)}
                         />
                     </div>
 
                     <div className="flex justify-end mt-7 gap-4">
-                        <button type="submit" className="inline-flex items-center gap-2 rounded-md px-5 py-2 border border-white/10 bg-gradient-to-r from-indigo-600 via-sky-600 to-purple-600 hover:bg-white/10 transition text-slate-200 font-semibold shadow-md">
-                            Add
+                        <button type="submit" onClick={e => handleSubmit(e)} className="inline-flex items-center gap-2 rounded-md px-5 py-2 border border-white/10 bg-gradient-to-r from-indigo-600 via-sky-600 to-purple-600 hover:bg-white/10 transition text-slate-200 font-semibold shadow-md">
+                            Update
                         </button>
 
                         <Link href={`/todo/${slug}/home`}>
@@ -82,6 +193,28 @@ export default function UpdateTodoPage() {
                     </div>
                 </form>
             </div>
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={4000}
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+            >
+                <Alert severity={snackbar.severity} onClose={() => setSnackbar({ ...snackbar, open: false })} sx={{ width: "100%" }}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+            {loading && (
+                <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm">
+                    <Lottie
+                        animationData={LoadingAnimations}
+                        loop={true}
+                        className="w-52 h-52"
+                    />
+                    <p className="text-slate-200 text-lg font-semibold mt-4">
+                        Updating your todo...
+                    </p>
+                </div>
+            )}
         </div>
     )
 }

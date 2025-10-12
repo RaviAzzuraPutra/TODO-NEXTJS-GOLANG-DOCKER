@@ -55,7 +55,7 @@ export default function TodoDetailPage() {
         }
     }
 
-    function formatAiInsight(rawText) {
+    const formatAiInsight = (rawText) => {
         if (!rawText) return "";
 
         // Pisahkan teks berdasarkan \n
@@ -78,6 +78,33 @@ export default function TodoDetailPage() {
         });
     }
 
+    const formatDescription = (rawText) => {
+        if (!rawText) return "";
+
+        // Pisahkan teks berdasarkan newline (LF / CRLF)
+        const paragraphs = rawText.split(/\r?\n/).map(p => p.trim()).filter(Boolean);
+
+        return paragraphs.map((p, index) => {
+            // Deteksi list (misal dimulai dengan angka + . atau *)
+            const match = p.match(/^(\d+\.|\*)\s+(.*)/);
+            if (match) {
+                const symbol = match[1]; // angka. atau *
+                const content = match[2]; // isi poin
+                return (
+                    <p key={index} className="mb-2">
+                        <strong>{symbol}</strong> {content}
+                    </p>
+                );
+            }
+            // Paragraf biasa
+            return <p key={index} className="mb-2">{p}</p>;
+        });
+    }
+
+    const formatCompleted = (value) => {
+        return value === true || value === "true" ? "Yes" : "No";
+    };
+
     return (
         <div className="w-full min-h-screen flex flex-col items-center justify-center py-10 px-2">
             <div className="w-full max-w-2xl flex items-center justify-center gap-3 mb-6">
@@ -97,12 +124,12 @@ export default function TodoDetailPage() {
                         <h2 className="text-xl font-semibold text-slate-200">Deadline:</h2>
                         <span className="text-lg font-normal text-slate-300">{formatDate(todoDetail.deadline)}</span>
                         <h2 className="text-xl font-semibold text-slate-200">Is Completed:</h2>
-                        <span className="text-lg font-normal text-slate-300">{todoDetail.isCompleted ? "Yes" : "No"}</span>
+                        <span className="text-lg font-normal text-slate-300">{formatCompleted(todoDetail.is_completed)}</span>
                     </div>
                     <div className="mt-2">
                         <h2 className="text-xl font-semibold text-slate-200 mb-2">Description:</h2>
                         <div className="bg-white/5 border border-white/10 rounded-lg p-4 text-slate-300 text-justify max-h-48 overflow-y-auto custom-scrollbar">
-                            {todoDetail.description}
+                            {formatDescription(todoDetail.description)}
                         </div>
                     </div>
                     <div className="mt-2 w-full">
