@@ -347,7 +347,7 @@ func UpdateIsCompleted(ctx *gin.Context) {
 
 	todo.Is_Completed = *isCompletedRequest.Is_Completed
 
-	errDb := database.DB.Table("todo").Joins("JOIN users on users.id = todo.user_id").Where("todo.id = ? AND users.slug = ?", id, userSlug).Updates(&todo).Error
+	errDb := database.DB.Table("todo").Where("todo.id = ?", id).Updates(&todo).Error
 
 	if errDb != nil {
 		ctx.JSON(500, gin.H{

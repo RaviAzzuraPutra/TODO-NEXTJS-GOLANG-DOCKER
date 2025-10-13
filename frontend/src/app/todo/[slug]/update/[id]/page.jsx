@@ -51,6 +51,8 @@ export default function UpdateTodoPage() {
     const getData = async () => {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/todo/${ID}`, {
+                is_completed: !currentStatus
+            }, {
                 withCredentials: true,
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("access_token")}`,

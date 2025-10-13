@@ -100,6 +100,37 @@ export default function Table() {
         return value === true || value === "true" ? "Yes" : "No";
     };
 
+    const isCompletedCheck = async (todoID, currentStatus) => {
+        try {
+            const token = localStorage.getItem("access_token")
+
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/todo/update-status/${todoID}`, { is_completed: !currentStatus }, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                validateStatus: (status) => status < 500,
+            })
+
+            if (response.status === 200) {
+                await fetchData();
+                setSnackbar({
+                    open: true,
+                    severity: "success",
+                    message: "Todo Is Completed!"
+                })
+            } else {
+                setSnackbar({
+                    open: true,
+                    severity: "error",
+                    message: "Failed to update status."
+                })
+            }
+        } catch (error) {
+            console.error("Error Updating Todo Status:", error)
+        }
+    }
+
     return (
         <div className="w-full overflow-x-auto">
             <table className="min-w-full border-collapse rounded-lg overflow-hidden bg-white/5 backdrop-blur-sm shadow-2xl">
@@ -139,7 +170,15 @@ export default function Table() {
                                 <td className="py-2 px-4 text-center">
                                     <div className="flex items-center justify-center gap-3">
                                         <div className="flex items-center gap-2">
-                                            <input type="checkbox" name="todo" id={`todo-${todo.id}`} checked={todo.is_completed} className="accent-sky-200" />
+                                            <input
+                                                type="checkbox"
+                                                name="todo"
+                                                id={`todo-${todo.id}`}
+                                                checked={todo.is_completed}
+                                                onChange={() => isCompletedCheck(todo.id, todo.is_completed)}
+                                                className="accent-sky-200 cursor-pointer"
+                                            />
+
                                             <label htmlFor={`todo-${todo.id}`} className="text-sm">Done</label>
                                         </div>
 
