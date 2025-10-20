@@ -1,0 +1,27 @@
+{
+    "name": "ToDo List App With Artificial Intelligence",
+    "short_name": "ToDo List AI",
+    "icons": [
+        {
+            "src": "/assets/LOGO-copy.ico",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/LOGO-copy.ico",
+            "sizes": "384x384",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/LOGO-copy.ico",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#8B008B",
+    "background_color": "#8B008B",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "portrait"
+}

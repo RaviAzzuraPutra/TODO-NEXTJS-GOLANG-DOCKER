@@ -14,6 +14,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className="min-h-screen">
       <head>
         <meta httpEquiv="Cache-Control" content="no-store" />
+        <link rel="manifest" href="/manifest.json" />
       </head>
       <body>
         {children}
