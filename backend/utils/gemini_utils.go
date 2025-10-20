@@ -103,8 +103,9 @@ func Gemini_Utils(title, description, deadline, lang string) (string, string, st
 		5. Make it as good as possible.
 		6. Do not include any introduction, explanation, or commentary outside the JSON format.
 		7. Separate the opening paragraph, list of suggestions and conclusion.
-		8. Use \n for line breaks in the insight section and Make sure not to use asterisks (*) in lists, bullet points, or emphasis when generating insights.
-		9. Make a maximum of 500 words.
+		8. Use \n for line breaks in the insight section 
+		9. Make sure not to use asterisks (*) in lists, bullet points, or emphasis when generating insights.
+		10. Make a maximum of 500 words.
 
 		Additional Rules:
 		1. Lists should be numbered, with each item representing a single actionable idea.

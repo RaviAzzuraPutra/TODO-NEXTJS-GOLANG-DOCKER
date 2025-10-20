@@ -52,14 +52,14 @@ export default function Home() {
 
     return (
         <>
-            <main className="px-8 py-10">
-                <h1 className="text-4xl font-semibold tracking-tight mb-10 pb-1 bg-gradient-to-r from-indigo-600 via-sky-600 to-purple-600 bg-clip-text text-transparent">ToDo List App With Artificial Intelligence</h1>
+            <main className="px-4 sm:px-8 py-8 sm:py-10">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight mb-6 sm:mb-10 pb-1 bg-gradient-to-r from-indigo-600 via-sky-600 to-purple-600 bg-clip-text text-transparent">ToDo List App With Artificial Intelligence</h1>
                 <div className="overflow-x-auto">
-                    <div className="mb-7 w-full flex justify-start">
+                    <div className="mb-6 sm:mb-7 w-full flex justify-start">
                         <Link href={`/todo/${slug}/add`}>
-                            <button className="inline-flex items-center gap-2 rounded-md px-5 py-3 bg-gradient-to-tr from-indigo-500/10 via-sky-400/6 to-purple-500/10 hover:from-indigo-500/15 hover:to-purple-500/15 transition-shadow shadow-inner">
-                                <Image src="/assets/add-task.png" alt="Add" width={21} height={21} />
-                                <span className="text-md text-slate-200">Add New Todo List</span>
+                            <button className="inline-flex w-full sm:w-auto items-center gap-3 rounded-md px-5 sm:px-6 py-3 sm:py-3 min-h-[48px] bg-gradient-to-tr from-indigo-500/10 via-sky-400/6 to-purple-500/10 hover:from-indigo-500/15 hover:to-purple-500/15 transition-shadow shadow-inner">
+                                <Image src="/assets/add-task.png" alt="Add" width={20} height={20} />
+                                <span className="text-base sm:text-md text-slate-200">Add New Todo List</span>
                             </button>
                         </Link>
                     </div>

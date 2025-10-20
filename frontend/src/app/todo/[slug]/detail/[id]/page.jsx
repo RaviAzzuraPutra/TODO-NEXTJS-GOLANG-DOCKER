@@ -58,45 +58,59 @@ export default function TodoDetailPage() {
     const formatAiInsight = (rawText) => {
         if (!rawText) return "";
 
-        // Pisahkan teks berdasarkan \n
         const paragraphs = rawText.split("\\n").map(p => p.trim()).filter(Boolean);
 
         return paragraphs.map((p, index) => {
-            // Deteksi list (misal dimulai dengan angka + . atau *)
+            // Deteksi jika diawali dengan nomor atau tanda bintang (misalnya "3." atau "*")
             const match = p.match(/^(\d+\.|\*)\s+(.*)/);
-            if (match) {
-                const symbol = match[1]; // angka. atau *
-                const content = match[2]; // isi poin
-                return (
-                    <p key={index} className="mb-2">
-                        <strong>{symbol}</strong> {content}
-                    </p>
-                );
+            let content = match ? match[2] : p;
+
+            // Ganti semua **teks** dengan <strong>teks</strong>
+            const parts = [];
+            const regex = /\*\*(.*?)\*\*/g;
+            let lastIndex = 0;
+            let boldMatch;
+
+            while ((boldMatch = regex.exec(content)) !== null) {
+                // Teks sebelum **
+                if (boldMatch.index > lastIndex) {
+                    parts.push(content.slice(lastIndex, boldMatch.index));
+                }
+                // Teks di dalam **
+                parts.push(<strong key={parts.length}>{boldMatch[1]}</strong>);
+                lastIndex = regex.lastIndex;
             }
-            // Paragraf biasa
-            return <p key={index} className="mb-2">{p}</p>;
+
+            // Tambahkan sisa teks setelah match terakhir
+            if (lastIndex < content.length) {
+                parts.push(content.slice(lastIndex));
+            }
+
+            return (
+                <p key={index} className="mb-2">
+                    {match && <strong>{match[1]}</strong>} {parts}
+                </p>
+            );
         });
-    }
+    };
+
 
     const formatDescription = (rawText) => {
         if (!rawText) return "";
 
-        // Pisahkan teks berdasarkan newline (LF / CRLF)
         const paragraphs = rawText.split(/\r?\n/).map(p => p.trim()).filter(Boolean);
 
         return paragraphs.map((p, index) => {
-            // Deteksi list (misal dimulai dengan angka + . atau *)
             const match = p.match(/^(\d+\.|\*)\s+(.*)/);
             if (match) {
-                const symbol = match[1]; // angka. atau *
-                const content = match[2]; // isi poin
+                const symbol = match[1];
+                const content = match[2];
                 return (
                     <p key={index} className="mb-2">
                         <strong>{symbol}</strong> {content}
                     </p>
                 );
             }
-            // Paragraf biasa
             return <p key={index} className="mb-2">{p}</p>;
         });
     }
@@ -106,46 +120,42 @@ export default function TodoDetailPage() {
     };
 
     return (
-        <div className="w-full min-h-screen flex flex-col items-center justify-center py-10 px-2">
-            <div className="w-full max-w-2xl flex items-center justify-center gap-3 mb-6">
-                <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-indigo-500 via-sky-500 to-purple-500 bg-clip-text text-transparent drop-shadow-lg">
+        <div className="w-full flex flex-col items-center py-8 px-4 sm:px-6">
+            <div className="w-full max-w-2xl flex items-center justify-center gap-3 mb-4 sm:mb-6">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center bg-gradient-to-r from-indigo-500 via-sky-500 to-purple-500 bg-clip-text text-transparent drop-shadow-lg">
                     Detail Todo {todoDetail.title}
                 </h1>
             </div>
-            <div className="w-full max-w-2xl p-6 rounded-2xl shadow-[0_8px_30px_-8px_rgba(2,6,23,0.6)] border border-white/10 bg-white/10 backdrop-blur-md">
-                <div className="flex flex-col gap-4 mb-6">
-                    <div className="grid grid-cols-2 gap-4">
-                        <h2 className="text-xl font-semibold text-slate-200">Title:</h2>
-                        <span className="text-lg font-normal text-slate-300">{todoDetail.title}</span>
-                        <h2 className="text-xl font-semibold text-slate-200">Category:</h2>
-                        <span className="text-lg font-normal text-slate-300">{todoDetail.category}</span>
-                        <h2 className="text-xl font-semibold text-slate-200">Priority:</h2>
-                        <span className="text-lg font-normal text-slate-300">{todoDetail.priority}</span>
-                        <h2 className="text-xl font-semibold text-slate-200">Deadline:</h2>
-                        <span className="text-lg font-normal text-slate-300">{formatDate(todoDetail.deadline)}</span>
-                        <h2 className="text-xl font-semibold text-slate-200">Is Completed:</h2>
-                        <span className="text-lg font-normal text-slate-300">{formatCompleted(todoDetail.is_completed)}</span>
+            <div className="w-full max-w-2xl p-4 sm:p-6 rounded-2xl shadow-[0_8px_30px_-8px_rgba(2,6,23,0.6)] border border-white/10 bg-white/10 backdrop-blur-md">
+                <div className="flex flex-col gap-4 mb-4 sm:mb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <h2 className="text-lg sm:text-xl font-semibold text-slate-200">Title:</h2>
+                        <span className="text-base sm:text-lg font-normal text-slate-300">{todoDetail.title}</span>
+                        <h2 className="text-lg sm:text-xl font-semibold text-slate-200">Category:</h2>
+                        <span className="text-base sm:text-lg font-normal text-slate-300">{todoDetail.category}</span>
+                        <h2 className="text-lg sm:text-xl font-semibold text-slate-200">Priority:</h2>
+                        <span className="text-base sm:text-lg font-normal text-slate-300">{todoDetail.priority}</span>
+                        <h2 className="text-lg sm:text-xl font-semibold text-slate-200">Deadline:</h2>
+                        <span className="text-base sm:text-lg font-normal text-slate-300">{formatDate(todoDetail.deadline)}</span>
+                        <h2 className="text-lg sm:text-xl font-semibold text-slate-200">Is Completed:</h2>
+                        <span className="text-base sm:text-lg font-normal text-slate-300">{formatCompleted(todoDetail.is_completed)}</span>
                     </div>
                     <div className="mt-2">
-                        <h2 className="text-xl font-semibold text-slate-200 mb-2">Description:</h2>
-                        <div className="bg-white/5 border border-white/10 rounded-lg p-4 text-slate-300 text-justify max-h-48 overflow-y-auto custom-scrollbar">
+                        <h2 className="text-lg sm:text-xl font-semibold text-slate-200 mb-2">Description:</h2>
+                        <div className="bg-white/5 border border-white/10 rounded-lg p-3 sm:p-4 text-slate-300 text-start sm:text-justify max-h-40 sm:max-h-48 overflow-y-auto custom-scrollbar">
                             {formatDescription(todoDetail.description)}
                         </div>
                     </div>
                     <div className="mt-2 w-full">
-                        <h2 className="text-xl font-semibold text-slate-200 mb-2">Insight From AI (Artificial Intelligence):</h2>
-                        <div className="bg-white/5 border border-white/10 rounded-lg p-4 text-slate-300 text-justify">
+                        <h2 className="text-lg sm:text-xl font-semibold text-slate-200 mb-2">Insight From AI (Artificial Intelligence):</h2>
+                        <div className="bg-white/5 border border-white/10 rounded-lg p-3 sm:p-4 text-slate-300 text-start sm:text-justify">
                             {formatAiInsight(todoDetail.ai_insight)}
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col items-end mt-8">
-                    <h4 className="text-md font-semibold text-slate-400">Created At: <span className="font-normal text-slate-300">{formatDate(todoDetail.CreatedAt)}</span></h4>
-                    <h4 className="text-md font-semibold text-slate-400">Updated At: <span className="font-normal text-slate-300">{formatDate(todoDetail.UpdatedAt)}</span></h4>
-                </div>
-                <div className="flex justify-end mt-7 gap-4">
+                <div className="flex justify-end mt-6 sm:mt-7 gap-4">
                     <Link href={`/todo/${slug}/home`}>
-                        <button className="inline-flex items-center gap-2 rounded-md px-4 py-2 border border-white/10 hover:bg-white/3 transition text-slate-200">Back</button>
+                        <button className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-md px-4 py-3 border border-white/10 hover:bg-white/3 transition text-slate-200">Back</button>
                     </Link>
                 </div>
             </div>

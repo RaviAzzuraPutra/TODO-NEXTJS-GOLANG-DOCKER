@@ -218,12 +218,10 @@ func UpdateTodo(ctx *gin.Context) {
 		return
 	}
 
-	// Determine what AI processing is needed
 	needsFullAIUpdate := titleChanged || descChanged
 	needsPriorityUpdate := !needsFullAIUpdate && deadlineChanged
 
 	if needsFullAIUpdate {
-		// Title or Description changed - need full AI regeneration
 		title := *todo.Title
 		desc := *todo.Description
 		deadline := *todo.Deadline
@@ -261,7 +259,6 @@ func UpdateTodo(ctx *gin.Context) {
 		updateData["priority"] = priority
 		updateData["ai_insight"] = insight
 	} else if needsPriorityUpdate {
-		// Only deadline changed - update priority only
 		deadline := *todo.Deadline
 		if todoRequest.Deadline != nil {
 			deadline = *todoRequest.Deadline
@@ -281,7 +278,6 @@ func UpdateTodo(ctx *gin.Context) {
 		}
 		updateData["priority"] = priority
 	}
-	// If only is_completed changed, skip all AI processing (no else block needed)
 
 	fmt.Println("Updating todo with data:", updateData)
 
