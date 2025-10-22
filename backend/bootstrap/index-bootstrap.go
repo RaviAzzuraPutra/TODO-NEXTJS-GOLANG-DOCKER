@@ -29,6 +29,9 @@ func InitialApp() {
 
 	FrontendURL := os.Getenv("FRONTEND_URL")
 
+	log.Println("PORT:", os.Getenv("PORT"))
+	log.Println("FRONTEND_URL:", os.Getenv("FRONTEND_URL"))
+
 	config.IndexConfig()
 
 	database.ConnectDB()
@@ -43,6 +46,12 @@ func InitialApp() {
 		AllowCredentials: true,
 		MaxAge:           12 * 60 * 60,
 	}))
+
+	app.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"Message": "Berjalan dengan baik 🚀",
+		})
+	})
 
 	auth_router.AuthRouter(app)
 	todo_router.TodoRouter(app)
