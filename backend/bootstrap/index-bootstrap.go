@@ -16,15 +16,14 @@ import (
 
 func InitialApp() {
 
+	errENV := godotenv.Load()
 	if os.Getenv("DEVELOPMENT") == "true" {
-		errENV := godotenv.Load()
-
 		if errENV != nil {
 			log.Println("Terjadi Kesalahan Saat Load .env")
 		}
 
 		log.Println("⚙️  Mode Development Aktif")
-	} else {
+	} else if os.Getenv("DEVELOPMENT") != "true" {
 		log.Println("⚙️  Mode Production Aktif")
 	}
 
