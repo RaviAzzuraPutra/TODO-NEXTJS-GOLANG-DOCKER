@@ -1,8 +1,6 @@
-FROM golang:1.22
+FROM golang:1.24
 
 WORKDIR /app
-
-RUN go mod tidy
 
 COPY go.mod go.sum ./
 

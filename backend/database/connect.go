@@ -2,6 +2,7 @@ package database
 
 import (
 	"backend/config/db_config"
+	"backend/model"
 	"fmt"
 	"log"
 
@@ -20,6 +21,12 @@ func ConnectDB() {
 
 	DB, errorConnect = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
+	errMigrate := DB.AutoMigrate(&model.User{}, &model.Todo{}, &model.Session{})
+
+	if errMigrate != nil {
+		log.Printf("GAGAL MIGRASI DATABASE ❌ " + errMigrate.Error())
+	}
+
 	if errorConnect != nil {
 		panic("GAGAL TERHUBUNG KE DATABASE" + errorConnect.Error())
 	}
@@ -28,5 +35,6 @@ func ConnectDB() {
 		panic("DATABASE TIDAK TERHUBUNG")
 	}
 
-	log.Printf("BERHASIL TERHUBUNG KE DATABASE ✅")
+	log.Printf("BERHASIL TERHUBUNG KE DATABASE ✅ Development Mode")
+
 }

@@ -1,0 +1,64 @@
+version: '3.9'
+
+services:
+  postgresql:
+    image: postgres:17.6
+    container_name: todo_postgre
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres/INIT.sql:/docker-entrypoint-initdb.d/INIT.sql:ro
+    networks:
+      - app_network
+  backend:
+    image: staynight/todo-backend:1.0
+    container_name: todo_backend
+    restart: always
+    ports:
+      - "7001:7001"
+    env_file:
+      - .env
+    environment:
+      - CLIENT_ID=${CLIENT_ID}
+      - CLIENT_SECRET=${CLIENT_SECRET}
+      - JWT_SECRET=${JWT_SECRET}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - PORT_BACKEND=${PORT_BACKEND}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - DEVELOPMENT=false
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_SSLMODE=${DB_SSLMODE}
+      - DB_TIMEZONE=${DB_TIMEZONE}
+    networks:
+      - app_network
+    depends_on:
+      - postgresql
+  frontend:
+    image: staynight/todo-frontend:1.0
+    container_name: todo_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - PORT_FRONTEND=${PORT_FRONTEND}
+      - NEXT_PUBLIC_BACKEND_URL=${BACKEND_URL}
+      - NEXT_PUBLIC_CLIENT_ID=${CLIENT_ID}
+    networks:
+      - app_network
+    depends_on:
+      - backend
+
+networks:
+  app_network:
+    driver: bridge

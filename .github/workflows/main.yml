@@ -1,0 +1,56 @@
+services:
+  - type: web
+    name: todo-backend
+    env: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    envVars:
+      - key: BD_HOST
+        sync: false
+      - key: BD_PORT
+        sync: false
+      - key: BD_USER
+        sync: false
+      - key: BD_PASSWORD
+        sync: false
+      - key: BD_NAME
+        sync: false
+      - key: BD_SSLMODE
+        sync: false
+      - key: BD_TIMEZONE
+        sync: false
+      - key: CLIENT_ID
+        sync: false
+      - key: CLIENT_SECRET
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: FRONTEND_URL
+        fromService:
+            name: todo-frontend
+            type: web
+            property: host
+      - key: DEVELOPMENT
+        value: "false"
+      - key: BACKEND_PORT
+        value: "7001"
+    autoDeploy: true
+
+  - type: web
+    name: todo-frontend
+    env: docker
+    plan: free
+    dockerfilePath: ./frontend/Dockerfile
+    envVars:
+      - key: NEXT_PUBLIC_BACKEND_URL
+        fromService:
+            name: todo-backend
+            type: web
+            property: host
+      - key: NEXT_PUBLIC_CLIENT_ID
+        sync: false
+      - key: FRONTEND_PORT
+        value: "3000"
+    autoDeploy: true

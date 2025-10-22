@@ -1,9 +1,8 @@
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    google_id VARCHAR(255) UNIQUE,
+    google_id VARCHAR(255) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255),
     display_name VARCHAR(255),
     first_name VARCHAR(100),
     last_name VARCHAR(100),
@@ -19,18 +18,22 @@ CREATE TABLE sessions (
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     session_token VARCHAR(255) UNIQUE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user
+    FOREIGN KEY(user_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS todo;
 CREATE TABLE todo (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
     description TEXT,
     category VARCHAR(100),
     priority VARCHAR(100),
-    duedate TIMESTAMP WITH TIME ZONE,
+    deadline TIMESTAMP WITH TIME ZONE,
     is_completed BOOLEAN DEFAULT FALSE,
     ai_insight TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,

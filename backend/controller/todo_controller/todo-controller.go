@@ -7,6 +7,7 @@ import (
 	"backend/utils"
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/abadojack/whatlanggo"
 	"github.com/gin-gonic/gin"
@@ -35,6 +36,7 @@ func CreateTodo(ctx *gin.Context) {
 			"Message": "Internal Server Error",
 			"Error":   "Terjadi Error pada Gemini API" + errGemini.Error(),
 		})
+		log.Println("Error Gemini:", errGemini)
 		return
 	}
 
@@ -54,6 +56,7 @@ func CreateTodo(ctx *gin.Context) {
 			"Message": "Internal Server Error",
 			"Error":   "Terjadi Error pada Database" + errDb.Error(),
 		})
+		log.Println("Error DB:", errDb)
 		return
 	}
 
