@@ -1,4 +1,9 @@
+# render.yaml
+
 services:
+  # =====================
+  # Backend Service
+  # =====================
   - type: web
     name: todo-backend
     env: docker
@@ -28,16 +33,16 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: FRONTEND_URL
-        fromService:
-            name: todo-frontend
-            type: web
-            property: host
+        sync: false
       - key: DEVELOPMENT
         value: "false"
       - key: BACKEND_PORT
         value: "7001"
     autoDeploy: true
 
+  # =====================
+  # Frontend Service
+  # =====================
   - type: web
     name: todo-frontend
     env: docker
@@ -46,9 +51,9 @@ services:
     envVars:
       - key: NEXT_PUBLIC_BACKEND_URL
         fromService:
-            name: todo-backend
-            type: web
-            property: host
+          name: todo-backend
+          type: web
+          property: host
       - key: NEXT_PUBLIC_CLIENT_ID
         sync: false
       - key: FRONTEND_PORT
