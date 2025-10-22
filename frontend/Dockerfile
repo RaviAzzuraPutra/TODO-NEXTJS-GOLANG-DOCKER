@@ -1,15 +1,13 @@
-# --- Build Stage ---
-FROM node:18-slim AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-
-# --- Runtime Stage ---
 FROM node:18-slim
+
 WORKDIR /app
-COPY --from=builder /app ./
-ENV NODE_ENV=production
+
+COPY package.json .
+
+RUN npm install
+
+COPY . .
+
 EXPOSE 3000
-CMD ["npm", "start"]
+
+CMD ["sh", "-c", "npm run build && npm start"]
