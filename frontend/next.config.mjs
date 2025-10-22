@@ -1,8 +1,16 @@
-import withPWA from 'next-pwa';
+import withPWA from "next-pwa";
 
-const nextConfig = withPWA({
-    dest: 'public',
+const nextConfig = {
     reactStrictMode: true,
-});
+    images: {
+        domains: ["res.cloudinary.com"],
+    },
+    experimental: {
+        optimizeCss: true,
+    },
+};
 
-export default nextConfig;
+export default withPWA({
+    dest: "public",
+    disable: process.env.NODE_ENV === "development",
+})(nextConfig);
