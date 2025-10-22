@@ -1,10 +1,10 @@
-# TODO - Mini Project: Next.js + Go (Gin) + PostgreSQL + Docker
+# ToDo List App With Artificial Inteligence
 
 Dokumentasi ini menjelaskan secara ringkas namun komprehensif tentang mini projek TODO yang menggabungkan frontend Next.js, backend Golang (Gin + Gorm), dan PostgreSQL, dikemas untuk mudah dijalankan secara lokal dan di dalam container Docker.
 
 ## 1. Pendahuluan
 
-Judul: TODO - Mini Project (Next.js + Golang + PostgreSQL + Docker + AI Integration)
+Judul: ToDo List App With Artificial Inteligence
 
 Gambaran Umum:
 Projek ini adalah aplikasi manajemen tugas (TODO) skala mini yang menggabungkan frontend modern berbasis Next.js dengan backend cepat menggunakan Golang (Gin). Backend menggunakan Gorm sebagai ORM dan PostgreSQL sebagai basis data. Aplikasi mendukung otentikasi (Google OAuth) dan penyimpanan sesi, serta fitur-fitur dasar CRUD untuk entitas Todo. Selain itu, projek ini terintegrasi dengan modul AI sederhana yang dapat memberikan insight atau rekomendasi singkat terkait tugas (contoh: saran prioritas, ringkasan deskripsi, atau estimasi waktu). Aplikasi ini dibuat sebagai mini projek untuk tujuan pembelajaran dan demonstrasi arsitektur web monorepo sederhana dan eksperimen AI ringan.
@@ -17,8 +17,9 @@ Keunikan:
 - Memanfaatkan Gorm untuk mapping entitas ke PostgreSQL, termasuk penggunaan UUID untuk primary key.
 - Dirancang untuk mudah di-containerize dengan Docker dan docker-compose untuk pengembangan lokal.
 
-Catatan: Ini adalah mini projek, bukan produksi-ready; fokus pada pembelajaran, keterbacaan kode, eksperimen
-AI, dan kesederhanaan pengaturan.
+Untuk itu saya membangun aplikasi “ToDo List App With Artificial Inteligence” diharapkan dapat berkontribusi pada diskursus akademis mengenai sinergi antara human-computer interaction dan generative AI, serta menyediakan baseline yang terukur untuk penelitian lanjutan di bidang intelligent task management systems.
+
+Catatan: Ini adalah mini projek, bukan produksi-ready; fokus pada pembelajaran, keterbacaan kode, eksperimen AI, dan kesederhanaan pengaturan.
 
 AI yang Digunakan (ringkas):
 - Provider: Google (Generative AI / Gemini).
@@ -55,14 +56,14 @@ berbagai konsep pengembangan aplikasi web monorepo modern.
 	- Database: PostgreSQL
 	- File dependensi: lihat `backend/go.mod` untuk paket lengkap dan versi
 
--- Frontend:
+- Frontend:
 		- Framework: Next.js (React)
 		- Auth: next-auth (terpasang di frontend)
 		- Paket inti yang digunakan (contoh): `next`, `react`, `react-dom`, `next-auth`, `axios`, `sweetalert2`,
 			`@mui/material`, `lottie-react`, `lucide-react`.
 		- Semua dependensi dan versi tercantum di `frontend/package.json`.
 
--- Lainnya:
+- Lainnya:
 	- Git sebagai VCS
 	- Docker + docker-compose untuk menjalankan stack secara tercontainer
 
@@ -94,9 +95,6 @@ Catatan paket backend (beberapa paket inti yang digunakan): `github.com/gin-goni
 	(personal todo manager).
 - Pengguna pendidikan: pelajar atau pengembang yang ingin mempelajari integrasi monorepo dan eksperimen
 	AI ringan.
-
-Catatan: Bagian ini menggantikan istilah 'perangkat pikir' — fokus sekarang ke siapa yang akan memakai aplikasi
-ini dan skenario penggunaan utama.
 
 ## 5. Struktur Direktori Ringkas
 
@@ -134,32 +132,6 @@ Bagaimana backend memanggil API (ringkasan):
 2. Saat Todo dibuat atau diupdate, backend dapat memanggil endpoint Generative AI dengan payload berisi
    teks deskripsi atau metadata Todo.
 3. API mengembalikan teks hasil (insight) yang kemudian disimpan di kolom `Ai_Insight` pada tabel `todos`.
-
-Contoh alur panggilan API (pseudo-code Go):
-
-```go
-// pseudo-code, bukan library-specific
-func GenerateAiInsight(apiKey, model, prompt string) (string, error) {
-	reqBody := map[string]interface{}{
-		"model": model,
-		"prompt": prompt,
-		"max_tokens": 300,
-	}
-	// buat request POST ke endpoint Generative AI (contoh: https://generativeai.googleapis.com/v1beta2/models/{model}:generate)
-	// set header Authorization: Bearer <apiKey>
-	// parse response dan kembalikan teks hasil
-}
-
-// pemakaian saat menyimpan Todo
-insight, err := GenerateAiInsight(os.Getenv("GEMINI_API_KEY"), os.Getenv("MODEL"), todo.Description)
-if err == nil {
-	todo.Ai_Insight = &insight
-}
-```
-
-Catatan: implementasi nyata harus mengikuti dokumentasi resmi Google Generative AI (endpoint, authentication,
-quota, dan rate limiting). Jika tidak menggunakan Google, anda bisa menggantinya dengan LLM lain selama API
-mengembalikan teks.
 
 Tabel entitas (format tabel):
 
@@ -210,66 +182,17 @@ Relasi singkat:
 
 Alur tinggi (end-to-end):
 
-1. Pengguna membuka frontend (Next.js). Jika belum ter-autentikasi, pengguna dapat login (menggunakan
-	 Google OAuth — terdapat request handling di backend dan dukungan di frontend dengan next-auth).
-2. Frontend memanggil API backend (Gin) untuk operasi: daftar todo, buat todo, lihat detail, update, hapus.
-3. Backend memvalidasi request, otorisasi user (middleware), lalu melaksanakan operasi CRUD melalui Gorm
-	 ke PostgreSQL.
-4. Respons diterima frontend yang lalu merender UI sesuai state. Perubahan seperti pembuatan atau penghapusan
-	 todo langsung tercermin setelah refresh data via axios.
-5. Sesi dan token disimpan (Session model) untuk manajemen otentikasi.
+1. Masuk dengan Google
+    Gunakan akun Google Anda untuk masuk. Kami memverifikasi token ID Google Anda di server dan membuat catatan pengguna jika ini adalah kali pertama Anda. Setelah masuk, Anda akan mendapatkan JWT berumur pendek yang disimpan sebagai sesi aman dan cookie sehingga Anda tetap masuk saat menggunakan aplikasi.
+2. Sessions & Authorization
+    Setelah login berhasil, server mengeluarkan JWT dan menyimpan catatan sesi. Aplikasi menggunakan token tersebut (cookie atau header Bearer) untuk mengakses daftar tugas pribadi Anda. Rute yang mengelola tugas dilindungi — hanya Anda yang dapat membaca atau mengubah tugas Anda sendiri.
+3. Buat Daftar Tugas — dengan bantuan AI
+    Saat Anda menambahkan tugas baru, sistem backend mengirimkan judul, deskripsi, dan batas waktu keasisten AI (Gemini). AI tersebut akan mengembalikan kategori yang disarankan (Pekerjaan, Studi, Pribadi, dll.),prioritas (Tinggi / Sedang / Rendah), dan wawasan singkat AI beserta saran yang dapat ditindaklanjuti. Anda dapatmenggunakan saran-saran tersebut apa adanya atau mengeditnya sebelum menyimpan.
+4. Kelola Tugas
+    Anda dapat memperbarui tugas apa pun, mengubah status penyelesaiannya, atau menghapusnya. Jika Anda mengubah judul atau deskripsi, AI akan mengevaluasi ulang kategori, prioritas, dan wawasan. Mengubah hanya batas waktu akan memperbarui prioritas tanpa menghasilkan ulang wawasan secara keseluruhan.
 
-## 8. Menjalankan Proyek Lokal
 
-Petunjuk singkat menjalankan stack secara lokal menggunakan Docker (direkomendasikan):
-
-1) Persyaratan:
-	 - Docker & docker-compose terinstal
-	 - Node.js (untuk dev frontend jika ingin menjalankan lokal tanpa container)
-	 - Go toolchain (opsional jika menjalankan backend langsung tanpa container)
-
-2) Menjalankan dengan Docker (direkomendasikan):
-	 - Pastikan file `docker-compose.yml` di root telah dikonfigurasi.
-	 - Di direktori root project, jalankan:
-
-```bash
-docker compose up --build
-```
-
-	 - Layanan akan membuat container untuk backend, frontend, dan postgres.
-	 - Akses frontend di http://localhost:3000 (default Next.js) dan backend pada port yang dikonfigurasi
-
-3) Menjalankan secara terpisah (tanpa Docker):
-	 - Backend:
-		 - Masuk ke folder `backend`.
-		 - Pastikan variable environment (DB connection string, Google OAuth secrets) ter-set.
-		 - Jalankan:
-
-```bash
-go run main.go
-```
-
-	 - Frontend:
-		 - Masuk ke folder `frontend`.
-		 - Install dependensi:
-
-```bash
-npm install
-```
-
-		 - Jalankan pengembangan:
-
-```bash
-npm run dev
-```
-
-4) Migrasi dan inisialisasi DB:
-	 - Jika perlu, jalankan skrip SQL di `postgres/INIT.sql` atau gunakan mekanisme migrasi pada folder `database/migrations`.
-
-Catatan: Pastikan environment variable seperti koneksi database, credentials Google OAuth, dan secret session
-diatur sebelum menjalankan backend tanpa container.
-
-## 9. Beyond the Code — Performance Benchmark & Trade-off Analysis
+## 8. Beyond the Code — Performance Benchmark & Trade-off Analysis
 
 Berikut perbandingan teknis singkat (ringkas) yang relevan untuk arsitektur dan keputusan teknis dalam proyek ini.
 
@@ -319,7 +242,7 @@ Rekomendasi Perbaikan & Langkah Lanjutan:
 - Profiling: gunakan pprof pada Go untuk menemukan bottleneck CPU/memory.
 
 
-10. Kesimpulan
+## 10. Kesimpulan
 Proyek TODO ini mengimplementasikan arsitektur monorepo modern yang menggabungkan Next.js sebagai frontend dengan Golang (menggunakan framework Gin dan ORM Gorm) sebagai backend, serta PostgreSQL sebagai basis data, seluruhnya dikontainerisasi dengan Docker. Integrasi AI Google Gemini menambahkan lapisan kecerdasan buatan untuk menghasilkan insight otomatis pada setiap tugas, seperti rekomendasi prioritas dan ringkasan deskripsi, yang disimpan dalam kolom khusus di basis data. Keputusan teknis seperti penggunaan UUID untuk primary key, soft delete, dan mekanisme autentikasi OAuth menunjukkan pendekatan yang terstruktur dan siap untuk pengembangan lebih lanjut, meskipun dalam konteks mini project yang berfokus pada kejelasan kode dan kemudahan setup.
 
 Secara akademis, proyek ini berfungsi sebagai laboratorium eksperimental yang mengilustrasikan integrasi multidisiplin antara rekayasa perangkat lunak, sistem cerdas, dan arsitektur cloud-native. Konfigurasi yang tercontainerisasi tidak hanya memastikan reproduktibilitas lingkungan, tetapi juga merepresentasikan praktik terbaik dalam pengembangan modern yang menekankan isolasi dependensi dan portabilitas. Melalui analisis trade-off teknologi seperti performa concurrency Go versus ekosistem Node.js, serta produktivitas Gorm dibandingkan kontrol penuh raw SQL proyek ini menyediakan kerangka empiris untuk mengevaluasi pilihan desain sistem, sekaligus menjadi basis yang valid untuk ekspansi lebih lanjut dalam bidang DevOps, optimasi kinerja, atau integrasi AI yang lebih kompleks.
