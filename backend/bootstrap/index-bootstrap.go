@@ -15,10 +15,17 @@ import (
 )
 
 func InitialApp() {
-	errENV := godotenv.Load()
 
-	if errENV != nil {
-		log.Println("Terjadi Kesalahan Saat Load .env")
+	if os.Getenv("DEVELOPMENT") == "true" {
+		errENV := godotenv.Load()
+
+		if errENV != nil {
+			log.Println("Terjadi Kesalahan Saat Load .env")
+		}
+
+		log.Println("⚙️  Mode Development Aktif")
+	} else {
+		log.Println("⚙️  Mode Production Aktif")
 	}
 
 	FrontendURL := os.Getenv("FRONTEND_URL")
