@@ -43,10 +43,13 @@ func ConnectDB() {
 		database_url := os.Getenv("DATABASE_URL")
 		DB, errorConnect = gorm.Open(postgres.Open(database_url), &gorm.Config{})
 
-		errMigrate := DB.AutoMigrate(&model.User{}, &model.Todo{}, &model.Session{})
-
-		if errMigrate != nil {
-			log.Printf("GAGAL MIGRASI DATABASE ❌ " + errMigrate.Error())
+		if os.Getenv("RUN_MIGRATION") == "true" {
+			log.Printf("⚠️ Menjalankan Migrasi Database...")
+			errMigrate := DB.AutoMigrate(&model.User{}, &model.Todo{}, &model.Session{})
+			if errMigrate != nil {
+				panic("GAGAL MIGRASI DATABASE ❌ " + errMigrate.Error())
+			}
+			log.Printf("✅ Migrasi Selesai!")
 		}
 
 		if errorConnect != nil {

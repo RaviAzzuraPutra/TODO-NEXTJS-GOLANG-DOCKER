@@ -14,6 +14,8 @@ services:
         sync: false
       - key: MODEL
         sync: false 
+      - key: RUN_MIGRATIONS
+        sync: "false"
       - key: CLIENT_ID
         sync: false
       - key: CLIENT_SECRET
