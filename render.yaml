@@ -10,20 +10,10 @@ services:
     plan: free
     dockerfilePath: ./backend/Dockerfile
     envVars:
-      - key: BD_HOST
+      - key: DATABASE_URL
         sync: false
-      - key: BD_PORT
-        sync: false
-      - key: BD_USER
-        sync: false
-      - key: BD_PASSWORD
-        sync: false
-      - key: BD_NAME
-        sync: false
-      - key: BD_SSLMODE
-        sync: false
-      - key: BD_TIMEZONE
-        sync: false
+      - key: MODEL
+        sync: false 
       - key: CLIENT_ID
         sync: false
       - key: CLIENT_SECRET
@@ -54,7 +44,7 @@ services:
           name: todo-backend
           type: web
           property: host
-      - key: NEXT_PUBLIC_CLIENT_ID
+      - key: NEXT_PUBLIC_GOOGLE_CLIENT_ID
         sync: false
       - key: FRONTEND_PORT
         value: "3000"
