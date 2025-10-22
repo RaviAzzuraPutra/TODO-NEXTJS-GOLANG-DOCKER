@@ -2,7 +2,6 @@ package bootstrap
 
 import (
 	"backend/config"
-	"backend/config/app_config"
 	"backend/database"
 	"backend/routes/auth_router"
 	"backend/routes/todo_router"
@@ -29,9 +28,6 @@ func InitialApp() {
 
 	FrontendURL := os.Getenv("FRONTEND_URL")
 
-	log.Println("PORT:", os.Getenv("PORT"))
-	log.Println("FRONTEND_URL:", os.Getenv("FRONTEND_URL"))
-
 	config.IndexConfig()
 
 	database.ConnectDB()
@@ -56,5 +52,6 @@ func InitialApp() {
 	auth_router.AuthRouter(app)
 	todo_router.TodoRouter(app)
 
-	app.Run(app_config.PORT)
+	app.Run("0.0.0.0:" + os.Getenv("PORT"))
+
 }
