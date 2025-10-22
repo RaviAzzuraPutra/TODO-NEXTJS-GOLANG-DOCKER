@@ -5,5 +5,5 @@ import "os"
 var PORT string
 
 func AppConfig() {
-	PORT = os.Getenv("PORT")
+	PORT = os.Getenv("PORT_BACKEND")
 }
